@@ -38,7 +38,6 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showFirst = true;
 
   void _change(){
-    print("aaa");
 
   }
 
