@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(
+      const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,139 +19,82 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Boxes(),
+      home: MyHomePage(),
     );
   }
 }
 
-class Box extends StatelessWidget {
-  const Box({Key? key,required this.color}) : super(key: key);
-  final  Color color;
+final textPro = StateProvider((ref) =>"");
+
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return  Expanded(child: AspectRatio(
-      aspectRatio: 1.0,
-      child: Container(
-        color: color,
-      ) ,
-    )
-    );
-  }
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
+class _MyHomePageState extends State<MyHomePage> {
+  bool showFirst = true;
 
-class Boxes extends StatefulWidget {
-  const Boxes({Key? key}) : super(key: key);
+  void _change(){
+    print("aaa");
 
-  @override
-  _BoxesState createState() => _BoxesState();
-}
-
-class Boxstful extends StatefulWidget {
-  const Boxstful({Key? key,required this.color}) : super(key: key);
-  final Color color;
-
-  @override
-  _BoxstfulState createState() => _BoxstfulState();
-}
-
-class _BoxstfulState extends State<Boxstful> {
-  @override
-  Widget build(BuildContext context) {
-    return   Expanded(child: AspectRatio(
-      aspectRatio: 1.0,
-      child: Container(
-        color: widget.color,
-      ) ,
-    )
-    );
-  }
-}
-
-class StatelessColorfulTile extends StatelessWidget {
-  final Color _color = UniqueColorGenerator.getColor();
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        color: _color, child: Padding(padding: EdgeInsets.all(100.0)));
-  }
-}
-
-class UniqueColorGenerator {
-  static List _colorOptions = [
-    Colors.blue,
-    Colors.red,
-    Colors.green,
-    Colors.yellow,
-    Colors.purple,
-    Colors.orange,
-    Colors.indigo,
-    Colors.amber,
-    Colors.black,
-  ];
-  static Random _random = new Random();
-  static Color getColor() {
-    if (_colorOptions.length > 0)
-      return _colorOptions.removeAt(_random.nextInt(_colorOptions.length));
-    else
-      return Color.fromARGB(_random.nextInt(256), _random.nextInt(256),
-          _random.nextInt(256), _random.nextInt(256));
-  }
-}
-
-
-
-class StatefulColorfulTile extends StatefulWidget {
-  StatefulColorfulTile({Key? key}) : super(key: key);
-
-  @override
-  ColorfulTileState createState() => ColorfulTileState();
-}
-
-class ColorfulTileState extends State<StatefulColorfulTile> {
-  Color? _color;
-  @override
-  void initState() {
-    super.initState();
-    _color = UniqueColorGenerator.getColor();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        color: _color,
-        child: Padding(
-          padding: EdgeInsets.all(100.0),
-        ));
-  }
-}
-class _BoxesState extends State<Boxes> {
-  final List<Widget> _boxes=[
-    StatefulColorfulTile(key: UniqueKey()), // 変更！！
-    StatefulColorfulTile(key: UniqueKey()),
-  ];
-  void _swapTiles() {
-    setState(() {
-      _boxes.insert(1, _boxes.removeAt(0));
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: _boxes,
-      ),floatingActionButton: FloatingActionButton(
-      onPressed: (){
-        _swapTiles();
-        // setState(() {
-        //   _boxes.shuffle();
-        // });
-      },
-    ),appBar: AppBar(
-
-    ),
+      appBar: AppBar(
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: <Widget>[
+            Visibility(child: MyTextField(key: ValueKey(0)),visible: showFirst,maintainState: true,) , // ←　修正！
+            MyTextField(key: ValueKey(1)), // ←　修正！
+            MyTextField(key: ValueKey(2)), // ←　修正！
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState((){
+            showFirst = !showFirst;
+          });
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
+
+class MyTextField extends StatefulWidget {
+  MyTextField({Key? key}) : super(key: key);
+  @override
+  _MyTextFieldState createState() => _MyTextFieldState();
+}
+
+class _MyTextFieldState extends State<MyTextField> {
+  final controller = TextEditingController();// 　追加！
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.addListener(_change);
+    print("a");
+
+  }
+   _change(){
+      print(controller.text);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+    );
+  }
+}
+
+
+
