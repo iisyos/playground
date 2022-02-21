@@ -37,9 +37,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool showFirst = true;
 
-  void _change(){
 
-  }
 
   @override
   Widget build(BuildContext context) {
